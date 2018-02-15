@@ -1,0 +1,946 @@
+# source: https://spectrum.chat/api
+# timestamp: Thu Feb 15 2018 00:11:49 GMT-0500 (EST)
+
+input AddCommunityMemberInput {
+  communityId: ID!
+}
+
+input AddCommunityModeratorInput {
+  userId: ID!
+  communityId: ID!
+}
+
+type Attachment {
+  attachmentType: String
+  data: String
+}
+
+input AttachmentInput {
+  attachmentType: String
+  data: String
+}
+
+input BlockCommunityMemberInput {
+  userId: ID!
+  communityId: ID!
+}
+
+type Channel {
+  id: ID!
+  createdAt: Date!
+  modifiedAt: Date
+  name: String!
+  description: String!
+  slug: String!
+  isPrivate: Boolean
+  isDefault: Boolean
+  channelPermissions: ChannelPermissions!
+  communityPermissions: CommunityPermissions!
+  community: Community!
+  threadConnection(first: Int = 10, after: String): ChannelThreadsConnection!
+  memberConnection(first: Int = 10, after: String): ChannelMembersConnection!
+  memberCount: Int!
+  metaData: ChannelMetaData
+  pendingUsers: [User]
+  blockedUsers: [User]
+  moderators: [User]
+  owners: [User]
+}
+
+type ChannelMemberEdge {
+  cursor: String!
+  node: User!
+}
+
+type ChannelMembersConnection {
+  pageInfo: PageInfo!
+  edges: [ChannelMemberEdge!]
+}
+
+type ChannelMetaData {
+  threads: Int
+  members: Int
+}
+
+type ChannelPermissions {
+  isMember: Boolean
+  isBlocked: Boolean
+  isPending: Boolean
+  isOwner: Boolean
+  isModerator: Boolean
+  receiveNotifications: Boolean
+}
+
+type ChannelThreadEdge {
+  cursor: String!
+  node: Thread!
+}
+
+type ChannelThreadsConnection {
+  pageInfo: PageInfo!
+  edges: [ChannelThreadEdge!]
+}
+
+type Community {
+  id: ID!
+  createdAt: Date!
+  name: String!
+  slug: String!
+  description: String!
+  website: String
+  profilePhoto: String
+  coverPhoto: String
+  reputation: Int
+  pinnedThreadId: String
+  pinnedThread: Thread
+  communityPermissions: CommunityPermissions
+  channelConnection: CommunityChannelsConnection!
+  members(first: Int = 10, after: String, filter: MembersFilter): CommunityMembers!
+  threadConnection(first: Int = 10, after: String): CommunityThreadsConnection!
+  metaData: CommunityMetaData
+  slackImport: SlackImport
+  invoices: [Invoice]
+  recurringPayments: [RecurringPayment]
+  isPro: Boolean
+  memberGrowth: GrowthData
+  conversationGrowth: GrowthData
+  topMembers: [User]
+  topAndNewThreads: TopAndNewThreads
+  watercooler: Thread
+  memberConnection(first: Int = 10, after: String, filter: MemberConnectionFilter): CommunityMembersConnection! @deprecated(reason: "Use the new Community.members type")
+  contextPermissions: ContextPermissions @deprecated(reason: "Use the new CommunityMember type to get permissions")
+}
+
+type CommunityChannelEdge {
+  node: Channel!
+}
+
+type CommunityChannelsConnection {
+  pageInfo: PageInfo!
+  edges: [CommunityChannelEdge!]
+}
+
+type CommunityMember {
+  id: ID!
+  user: User!
+  roles: [String]
+  isMember: Boolean
+  isModerator: Boolean
+  isOwner: Boolean
+  isBlocked: Boolean
+  reputation: Int
+}
+
+type CommunityMemberEdge {
+  cursor: String!
+  node: User!
+}
+
+type CommunityMembers {
+  pageInfo: PageInfo!
+  edges: [CommunityMembersEdge!]
+}
+
+type CommunityMembersConnection {
+  pageInfo: PageInfo!
+  edges: [CommunityMemberEdge!]
+}
+
+type CommunityMembersEdge {
+  cursor: String!
+  node: CommunityMember!
+}
+
+type CommunityMetaData {
+  members: Int
+  channels: Int
+}
+
+type CommunityPermissions {
+  isMember: Boolean
+  isBlocked: Boolean
+  isOwner: Boolean
+  isModerator: Boolean
+  receiveNotifications: Boolean
+  reputation: Int
+}
+
+type CommunityThreadEdge {
+  cursor: String!
+  node: Thread!
+}
+
+type CommunityThreadsConnection {
+  pageInfo: PageInfo!
+  edges: [CommunityThreadEdge!]
+}
+
+input ContentInput {
+  body: String!
+}
+
+type ContextPermissions {
+  communityId: String
+  reputation: Int
+  isModerator: Boolean
+  isOwner: Boolean
+  isMember: Boolean
+  isBlocked: Boolean
+}
+
+type CoreMetrics {
+  dau: Int
+  wau: Int
+  mau: Int
+  dac: Int
+  wac: Int
+  mac: Int
+  cpu: Float
+  mpu: Float
+  tpu: Float
+  users: Int
+  communities: Int
+  threads: Int
+  dmThreads: Int
+  threadMessages: Int
+  dmMessages: Int
+  date: Date
+}
+
+input CreateChannelInput {
+  name: String!
+  slug: String!
+  description: String
+  communityId: ID!
+  isPrivate: Boolean
+  isDefault: Boolean
+}
+
+input CreateCommunityInput {
+  name: String!
+  slug: String!
+  description: String!
+  website: String
+  file: File
+  coverFile: File
+}
+
+scalar Date
+
+input DirectMessageContentInput {
+  messageType: MessageType!
+  threadType: String!
+  content: ContentInput!
+  file: File
+}
+
+type DirectMessageEdge {
+  cursor: String!
+  node: Message!
+}
+
+type DirectMessagesConnection {
+  pageInfo: PageInfo!
+  edges: [DirectMessageEdge!]
+}
+
+type DirectMessageThread {
+  id: ID!
+  messageConnection(first: Int = 20, after: String): DirectMessagesConnection!
+  participants: [ParticipantInfo]!
+  snippet: String!
+  threadLastActive: Date!
+}
+
+type DirectMessageThreadEdge {
+  cursor: String!
+  node: DirectMessageThread!
+}
+
+input DirectMessageThreadInput {
+  participants: [ID!]
+  message: DirectMessageContentInput!
+}
+
+input DowngradeCommunityInput {
+  id: String!
+}
+
+type Edit {
+  timestamp: Date!
+  content: ThreadContent!
+}
+
+input EditChannelInput {
+  name: String
+  slug: String
+  description: String
+  isPrivate: Boolean
+  channelId: ID!
+}
+
+input EditCommunityInput {
+  name: String
+  description: String
+  website: String
+  file: File
+  coverFile: File
+  communityId: ID!
+}
+
+input EditThreadInput {
+  threadId: ID!
+  content: ThreadContentInput!
+  attachments: [AttachmentInput]
+  filesToUpload: [File]
+}
+
+input EditUserInput {
+  file: File
+  coverFile: File
+  name: String
+  description: String
+  website: String
+  username: String
+  timezone: Int
+}
+
+input EmailInviteContactInput {
+  email: String!
+  firstName: String
+  lastName: String
+}
+
+input EmailInvitesInput {
+  id: ID!
+  contacts: [EmailInviteContactInput]
+  customMessage: String
+}
+
+enum EntityType {
+  REACTION
+  MESSAGE
+  THREAD
+  CHANNEL
+  COMMUNITY
+  USER
+  DIRECT_MESSAGE_THREAD
+}
+
+type EverythingThreadEdge {
+  cursor: String!
+  node: Thread!
+}
+
+type EverythingThreadsConnection {
+  pageInfo: PageInfo!
+  edges: [EverythingThreadEdge!]
+}
+
+input File {
+  name: String!
+  type: String!
+  size: Int!
+  path: String!
+}
+
+type GithubProfile {
+  id: Int
+  username: String
+}
+
+type GrowthData {
+  count: Int
+  weeklyGrowth: GrowthDataCounts
+  monthlyGrowth: GrowthDataCounts
+  quarterlyGrowth: GrowthDataCounts
+}
+
+type GrowthDataCounts {
+  growth: Float
+  currentPeriodCount: Int
+  prevPeriodCount: Int
+}
+
+type Invoice {
+  id: ID!
+  paidAt: Int
+  amount: Int
+  sourceBrand: String
+  sourceLast4: String
+  planName: String
+}
+
+input MemberConnectionFilter {
+  isOwner: Boolean
+  isMember: Boolean
+  isBlocked: Boolean
+  isPending: Boolean
+  isModerator: Boolean
+}
+
+input MembersFilter {
+  isOwner: Boolean
+  isMember: Boolean
+  isBlocked: Boolean
+  isPending: Boolean
+  isModerator: Boolean
+}
+
+type Message {
+  id: ID!
+  timestamp: Date!
+  thread: Thread
+  content: MessageContent!
+  author: ThreadParticipant!
+  reactions: ReactionData
+  messageType: MessageTypes!
+  sender: User! @deprecated(reason: "Use Message.author field instead")
+}
+
+type MessageContent {
+  body: String!
+}
+
+input MessageContentInput {
+  body: String
+}
+
+input MessageInput {
+  threadId: ID!
+  threadType: ThreadTypes!
+  messageType: MessageTypes!
+  content: MessageContentInput!
+  file: File
+}
+
+enum MessageType {
+  text
+  media
+  draftjs
+}
+
+enum MessageTypes {
+  text
+  media
+  draftjs
+}
+
+type Meta {
+  isAdmin: Boolean
+  usersGrowth: UsersGrowthData
+  communitiesGrowth: GrowthData
+  channelsGrowth: GrowthData
+  threadsGrowth: GrowthData
+  directMessageThreadsGrowth: GrowthData
+  threadMessagesGrowth: GrowthData
+  directMessagesGrowth: GrowthData
+  coreMetrics: [CoreMetrics]
+  topThreads: [Thread]
+}
+
+type Mutation {
+  dummy: String
+  createCommunity(input: CreateCommunityInput!): Community
+  editCommunity(input: EditCommunityInput!): Community
+  deleteCommunity(communityId: ID!): Boolean
+  toggleCommunityMembership(communityId: ID!): Community @deprecated(reason: "Use the new addCommunityMember or removeCommunityMember mutations")
+  sendSlackInvites(input: SendSlackInvitesInput!): Community
+  sendEmailInvites(input: EmailInvitesInput!): Boolean
+  pinThread(threadId: ID!, communityId: ID!, value: String): Community
+  upgradeCommunity(input: UpgradeCommunityInput!): Community
+  downgradeCommunity(input: DowngradeCommunityInput!): Community
+  addCommunityMember(input: AddCommunityMemberInput!): Community
+  removeCommunityMember(input: RemoveCommunityMemberInput!): Community
+  addCommunityModerator(input: AddCommunityModeratorInput!): CommunityMember
+  removeCommunityModerator(input: RemoveCommunityModeratorInput!): CommunityMember
+  blockCommunityMember(input: BlockCommunityMemberInput!): CommunityMember
+  unblockCommunityMember(input: UnblockCommunityMemberInput!): CommunityMember
+  createChannel(input: CreateChannelInput!): Channel
+  editChannel(input: EditChannelInput!): Channel
+  deleteChannel(channelId: ID!): Boolean
+  toggleChannelSubscription(channelId: ID!): Channel
+  toggleChannelNotifications(channelId: ID!): Channel
+  togglePendingUser(input: TogglePendingUserInput!): Channel
+  unblockUser(input: UnblockUserInput!): Channel
+  sendChannelEmailInvites(input: EmailInvitesInput!): Boolean
+  publishThread(thread: ThreadInput!): Thread
+  editThread(input: EditThreadInput!): Thread
+  setThreadLock(threadId: ID!, value: Boolean!): Thread
+  toggleThreadNotifications(threadId: ID!): Thread
+  deleteThread(threadId: ID!): Boolean
+  moveThread(threadId: ID!, channelId: ID!): Thread
+  addMessage(message: MessageInput!): Message
+  deleteMessage(id: ID!): Boolean
+
+  """Returns true if toggling completed successfully"""
+  toggleReaction(reaction: ReactionInput!): Message
+  editUser(input: EditUserInput!): User
+  upgradeToPro(input: UpgradeToProInput!): User
+  downgradeFromPro: User
+  toggleNotificationSettings(input: ToggleNotificationSettingsInput): User
+  subscribeWebPush(subscription: WebPushSubscription!): Boolean
+  unsubscribeWebPush(endpoint: String!): Boolean
+  updateUserEmail(email: String!): User
+  createDirectMessageThread(input: DirectMessageThreadInput!): DirectMessageThread
+  setLastSeen(id: ID!): DirectMessageThread
+  markAllNotificationsSeen: Boolean
+  markAllNotificationsRead: Boolean
+  markDirectMessageNotificationsSeen: Boolean
+  markSingleNotificationSeen(id: ID!): Boolean
+  saveUserCommunityPermissions(input: SaveUserCommunityPermissionsInput!): User
+}
+
+type Notification {
+  id: ID!
+  createdAt: Date!
+  modifiedAt: Date!
+  actors: [NotificationEntityType]!
+  context: NotificationEntityType!
+  entities: [NotificationEntityType]!
+  event: NotificationEventType!
+  isRead: Boolean!
+  isSeen: Boolean!
+}
+
+type NotificationEdge {
+  cursor: String
+  node: Notification
+}
+
+type NotificationEntityType {
+  id: ID!
+  payload: String!
+  type: EntityType
+}
+
+enum NotificationEventType {
+  REACTION_CREATED
+  MESSAGE_CREATED
+  THREAD_CREATED
+  CHANNEL_CREATED
+  DIRECT_MESSAGE_THREAD_CREATED
+  USER_JOINED_COMMUNITY
+  USER_REQUESTED_TO_JOIN_PRIVATE_CHANNEL
+  USER_APPROVED_TO_JOIN_PRIVATE_CHANNEL
+  THREAD_LOCKED_BY_OWNER
+  THREAD_DELETED_BY_OWNER
+  COMMUNITY_INVITE
+  MENTION_THREAD
+  MENTION_MESSAGE
+  PRIVATE_CHANNEL_REQUEST_SENT
+  PRIVATE_CHANNEL_REQUEST_APPROVED
+}
+
+type NotificationKindSettings {
+  email: Boolean
+}
+
+type NotificationsConnection {
+  pageInfo: PageInfo
+  edges: [NotificationEdge]
+}
+
+type NotificationSettingsType {
+  newMessageInThreads: NotificationKindSettings
+  newDirectMessage: NotificationKindSettings
+  newThreadCreated: NotificationKindSettings
+  weeklyDigest: NotificationKindSettings
+  dailyDigest: NotificationKindSettings
+  newMention: NotificationKindSettings
+}
+
+type PageInfo {
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
+}
+
+type ParticipantInfo {
+  id: ID!
+  name: String!
+  username: String
+  profilePhoto: String!
+  lastActive: Date
+  lastSeen: Date
+  userId: ID!
+  isOnline: Boolean
+}
+
+enum PendingActionType {
+  block
+  approve
+}
+
+"""
+The dummy queries and mutations are necessary because
+graphql-js cannot have empty root types and we only extend
+these types later on
+Ref: apollographql/graphql-tools#293
+"""
+type Query {
+  dummy: String
+  community(id: ID, slug: String): Community
+  communities(slugs: [String], ids: [ID], curatedContentType: String): [Community]
+  communityMember(userId: ID!, communityId: ID!): CommunityMember
+  topCommunities(amount: Int = 20): [Community!]
+  recentCommunities: [Community!]
+  searchCommunities(string: String, amount: Int = 20): [Community] @deprecated(reason: "Use the new Search query endpoint")
+  searchCommunityThreads(communityId: ID!, searchString: String): [Thread] @deprecated(reason: "Use the new Search query endpoint")
+  channel(id: ID, channelSlug: String, communitySlug: String): Channel
+  thread(id: ID!): Thread
+  searchThreads(queryString: String!, filter: SearchThreadsFilter): [Thread] @deprecated(reason: "Use the new Search query endpoint")
+  message(id: ID!): Message
+  getMediaMessagesForThread(threadId: ID!): [Message]
+  reaction(id: String!): Reaction
+  user(id: ID, username: String): User
+  currentUser: User
+  searchUsers(string: String): [User] @deprecated(reason: "Use the new Search query endpoint")
+  directMessageThread(id: ID!): DirectMessageThread
+  notification(id: ID!): Notification
+  notifications(first: Int = 10, after: String): NotificationsConnection
+  directMessageNotifications(first: Int = 10, after: String): NotificationsConnection
+  meta: Meta
+  invoice(id: ID): Invoice
+  search(
+    """Returns the first *n* results from the list"""
+    first: Int
+
+    """Returns the elements in the list that come after the specified ID"""
+    after: String
+
+    """Returns the last *n* results from the list"""
+    last: Int
+
+    """Returns the elements in the list that come before the specified ID"""
+    before: String
+
+    """The string typed by the user to search for"""
+    queryString: String!
+
+    """The types of items that can be searched"""
+    type: SearchType!
+
+    """
+    Optional ID to be used to filter search results by community, channel, user, etc.
+    """
+    filter: SearchFilter
+  ): SearchResults
+}
+
+type Reaction {
+  id: ID!
+  timestamp: Date!
+  message: Message!
+  user: User!
+  type: ReactionTypes!
+}
+
+type ReactionData {
+  count: Int!
+  hasReacted: Boolean
+}
+
+input ReactionInput {
+  messageId: ID!
+  type: ReactionTypes!
+}
+
+enum ReactionTypes {
+  like
+}
+
+type RecurringPayment {
+  plan: String
+  amount: String
+  createdAt: String
+  status: String
+}
+
+input RemoveCommunityMemberInput {
+  communityId: ID!
+}
+
+input RemoveCommunityModeratorInput {
+  userId: ID!
+  communityId: ID!
+}
+
+input SaveUserCommunityPermissionsInput {
+  isOwner: Boolean
+  isMember: Boolean
+  isBlocked: Boolean
+  isModerator: Boolean
+  receiveNotifications: Boolean
+  id: ID!
+}
+
+input SearchFilter {
+  communityId: ID
+  channelId: ID
+  creatorId: ID
+  everythingFeed: Boolean
+}
+
+type SearchResultEdge {
+  cursor: String!
+  node: SearchResultNode
+}
+
+union SearchResultNode = Community | Thread | User | CommunityMember
+
+type SearchResults {
+  searchResultsConnection: SearchResultsConnection
+}
+
+type SearchResultsConnection {
+  edges: [SearchResultEdge]
+  pageInfo: PageInfo
+}
+
+input SearchThreadsFilter {
+  communityId: ID
+  creatorId: ID
+  channelId: ID
+  everythingFeed: Boolean
+}
+
+enum SearchType {
+  COMMUNITIES
+  USERS
+  THREADS
+  COMMUNITY_MEMBERS
+}
+
+input SendSlackInvitesInput {
+  id: ID!
+  customMessage: String
+}
+
+type SlackImport {
+  members: String
+  teamName: String
+  sent: Date
+}
+
+type Subscription {
+  dummy: String
+  threadUpdated: Thread
+  messageAdded(thread: ID!): Message
+  directMessageThreadUpdated: DirectMessageThread
+  notificationAdded: Notification
+  dmNotificationAdded: Notification
+}
+
+type Thread {
+  id: ID!
+  createdAt: Date!
+  modifiedAt: Date
+  channel: Channel!
+  community: Community!
+  isPublished: Boolean!
+  content: ThreadContent!
+  isLocked: Boolean
+  isAuthor: Boolean
+  receiveNotifications: Boolean
+  lastActive: Date
+  type: ThreadType
+  edits: [Edit!]
+  participants: [User]
+  messageConnection(first: Int, after: String, last: Int, before: String): ThreadMessagesConnection!
+  messageCount: Int
+  author: ThreadParticipant!
+  attachments: [Attachment]
+  watercooler: Boolean
+  currentUserLastSeen: Date
+  isCreator: Boolean @deprecated(reason: "Use Thread.isAuthor instead")
+  creator: User! @deprecated(reason: "Use Thread.author instead")
+}
+
+enum ThreadConnectionType {
+  participant
+  creator
+}
+
+"""The contents of a thread"""
+type ThreadContent {
+  title: String
+  body: String
+  media: String
+}
+
+input ThreadContentInput {
+  title: String
+  body: String
+}
+
+input ThreadInput {
+  channelId: ID!
+  communityId: ID!
+  type: ThreadType
+  content: ThreadContentInput!
+  attachments: [AttachmentInput]
+  filesToUpload: [File]
+}
+
+type ThreadMessageEdge {
+  cursor: String!
+  node: Message!
+}
+
+type ThreadMessagesConnection {
+  pageInfo: PageInfo!
+  edges: [ThreadMessageEdge!]
+}
+
+type ThreadParticipant {
+  id: ID!
+  user: User!
+  roles: [String]
+  isMember: Boolean
+  isModerator: Boolean
+  isOwner: Boolean
+  isBlocked: Boolean
+  reputation: Int
+}
+
+enum ThreadType {
+  SLATE
+  DRAFTJS
+}
+
+enum ThreadTypes {
+  story
+  directMessageThread
+}
+
+input ToggleNotificationSettingsInput {
+  deliveryMethod: String!
+  notificationType: String!
+}
+
+input TogglePendingUserInput {
+  channelId: ID!
+  userId: ID!
+  action: PendingActionType!
+}
+
+type TopAndNewThreads {
+  topThreads: [Thread]
+  newThreads: [Thread]
+}
+
+input UnblockCommunityMemberInput {
+  userId: ID!
+  communityId: ID!
+}
+
+input UnblockUserInput {
+  channelId: ID!
+  userId: ID!
+}
+
+input UpgradeCommunityInput {
+  plan: String!
+  token: String!
+  communityId: String!
+}
+
+input UpgradeToProInput {
+  plan: String!
+  token: String!
+}
+
+type User {
+  id: ID!
+  name: String
+  firstName: String
+  description: String
+  website: String
+  username: String
+  profilePhoto: String
+  coverPhoto: String
+  email: String
+  providerId: String
+  createdAt: Date!
+  lastSeen: Date!
+  isOnline: Boolean
+  timezone: Int
+  totalReputation: Int
+  pendingEmail: String
+
+  """non-schema fields"""
+  threadCount: Int
+  isAdmin: Boolean
+  isPro: Boolean!
+  communityConnection: UserCommunitiesConnection!
+  channelConnection: UserChannelsConnection!
+  directMessageThreadsConnection(first: Int = 15, after: String): UserDirectMessageThreadsConnection!
+  threadConnection(first: Int = 20, after: String, kind: ThreadConnectionType): UserThreadsConnection!
+  everything(first: Int = 20, after: String): EverythingThreadsConnection!
+  recurringPayments: [RecurringPayment]
+  invoices: [Invoice]
+  settings: UserSettings
+  githubProfile: GithubProfile
+  contextPermissions: ContextPermissions @deprecated(reason: "Use the CommunityMember type to get permissions")
+}
+
+type UserChannelEdge {
+  node: Channel!
+}
+
+type UserChannelsConnection {
+  pageInfo: PageInfo!
+  edges: [UserChannelEdge!]
+}
+
+type UserCommunitiesConnection {
+  pageInfo: PageInfo!
+  edges: [UserCommunityEdge!]
+}
+
+type UserCommunityEdge {
+  node: Community!
+}
+
+type UserDirectMessageThreadsConnection {
+  pageInfo: PageInfo!
+  edges: [DirectMessageThreadEdge]
+}
+
+type UserNotificationsSettings {
+  types: NotificationSettingsType
+}
+
+type UserSettings {
+  notifications: UserNotificationsSettings
+}
+
+type UsersGrowthData {
+  count: Int
+  dau: Int
+  wau: Int
+  mau: Int
+  weeklyGrowth: GrowthDataCounts
+  monthlyGrowth: GrowthDataCounts
+  quarterlyGrowth: GrowthDataCounts
+}
+
+type UserThreadEdge {
+  cursor: String!
+  node: Thread!
+}
+
+type UserThreadsConnection {
+  pageInfo: PageInfo!
+  edges: [UserThreadEdge!]
+}
+
+input WebPushSubscription {
+  endpoint: String!
+  keys: WebPushSubscriptionKeys!
+}
+
+input WebPushSubscriptionKeys {
+  p256dh: String!
+  auth: String!
+}
